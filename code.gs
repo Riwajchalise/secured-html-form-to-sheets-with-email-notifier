@@ -18,7 +18,7 @@ function sendEmail(row) {
 
 function isValidOrigin(origin) {
   // Define the allowed domain 
-  const allowedDomain = 'https://sfs.rctec.co; // Replace this with your domain name
+  const allowedDomain = 'https://sfs.rctec.co;' // Replace this with your domain name
 
   // Check if the origin matches the allowed domain 
   return origin.includes(allowedDomain);
