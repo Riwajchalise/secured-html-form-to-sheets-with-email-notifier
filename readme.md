@@ -1,6 +1,9 @@
 # Google Sheets Form Handler & Email Notifier
 
-This project provides a Google Apps Script for handling form submissions and sending email notifications when new submissions are received. It is designed to work with Google Sheets as a backend to store form data that only accepts data to be accepted form a specific domain hence cross-origin resource sharing (CORS) configuration is also managed.
+The inspiration for this project is [this repo](https://github.com/levinunnink/html-form-to-google-sheet) by levinunnink.
+
+This project provides a Google Apps Script for handling form submissions and sending email notifications when new submissions are received. It is designed to work with Google Sheets as a backend to store form data that only accepts data to be accepted form a specific domain hence cross-origin resource sharing (CORS) configuration is also managed. 
+
 
 ## Getting Started
 
@@ -12,6 +15,81 @@ This project provides a Google Apps Script for handling form submissions and sen
 
 ## 2. Set up the Google Apps Script
 - Open Google Sheets and go to Extensions > Apps Script.
+```js
+const sheetName = 'Sheet1';
+const scriptProp = PropertiesService.getScriptProperties();
+
+function initialSetup() {
+  const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  scriptProp.setProperty('key', activeSpreadsheet.getId());
+}
+
+
+function sendEmail(row) {
+  const recipientEmail = 'test@email.com'; //Replace with the email address where you want to receive notification 
+  const subject = 'New Form Submission';
+  const body = `A new form submission has been added to Sheet1. 
+    \n\nDetails:\n${JSON.stringify(row)}`;
+
+  GmailApp.sendEmail(recipientEmail, subject, body);
+}
+
+function isValidOrigin(origin) {
+  // Define the allowed domain 
+  const allowedDomain = 'https://sfs.rctec.co;' // Replace this with your domain name
+
+  // Check if the origin matches the allowed domain 
+  return origin.includes(allowedDomain);
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    const origin = e && e.parameter && e.parameter.origin ? e.parameter.origin : '';
+    const isValid = isValidOrigin(origin);
+
+    if (!isValid) {
+      // If the origin is not valid, return an error response
+      return ContentService
+        .createTextOutput(JSON.stringify({ 'result': 'error', 'message': 'You are not allowed to access this resource.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Proceed with the rest of your code to handle valid submissions
+    const doc = SpreadsheetApp.openById(scriptProp.getProperty('key'));
+    const sheet = doc.getSheetByName(sheetName);
+
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const nextRow = sheet.getLastRow() + 1;
+
+    const newRow = headers.map(function (header) {
+      return header === 'Date' ? new Date() : e.parameter[header];
+    });
+
+    sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow]);
+
+    // Send email with the last entered row
+    sendEmail({ 'row': nextRow, 'data': newRow });
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'success', 'row': nextRow }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  catch (e) {
+    // Return error response
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'error', 'error': e }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  finally {
+    lock.releaseLock();
+  }
+}
+```
 - Replace the contents of the script editor with the provided code from the code.gs file in this repository.
 - You need to replace 2 important variables in the script.
     - The email that will receive the notification  ```**const recipientEmail = '*test@email.com*'**```
@@ -56,8 +134,25 @@ This project provides a Google Apps Script for handling form submissions and sen
         <button type="submit">Send</button>
  </form>
 ```
-
-If you don't want to redirect into webapp you can do that by using JS event listner  
+## Optional Step
+If you don't want to redirect into webapp you can do that by using JS event listner to prevent the default action using the following js code
+```js
+window.addEventListener("load", function () {
+        const form = document.getElementById('g-form');
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const data = new FormData(form);
+            const action = e.target.action;
+            fetch(action, {
+                method: 'POST',
+                body: data,
+            })
+                .then(() => {
+                    document.getElementById('message').innerHTML = 'Message Sent Successfully';
+                })
+        });
+    });
+```
 
 
 
