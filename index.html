@@ -9,19 +9,58 @@
 </head>
 
 <body>
-    <form id="g-form" method="POST" action="https://script.google.com/macros/s/AKfycbyDZzafo4VcUGAcdJ8-kMiTky64oyC_QqcUrKinBRODIW1Y4YydEW25IOHgGFQSr09Q/exec">
+    <!-- <form id="g-form" method="POST" action="https://script.google.com/macros/s/AKfycbyDZzafo4VcUGAcdJ8-kMiTky64oyC_QqcUrKinBRODIW1Y4YydEW25IOHgGFQSr09Q/exec">
         <div id="message"></div>
         <input name="Name" type="text" placeholder="Name" required><br>
         <input name="Email" type="email" placeholder="Email" required><br>
         <textarea rows="8" name="Message" id="message" placeholder="If you have any query or messages please enter"
             class="formbold-form-input"></textarea><br>
         <button type="submit">Send</button>
-    </form>
+    </form> -->
+
+    <form method="POST" action="https://script.google.com/macros/s/AKfycbw_wncpGjoZb9jaIkLkDpeIk3dSz8b7j4opmPrtHF9Iem3ewQEvzjo0--cvw-wxDYQb/exec" id="contact-form">
+        <div class="formbold-mb-5">
+          <input type="text" name="Name" id="name" placeholder="Full Name" class="formbold-form-input">
+        </div>
+        <div class="formbold-mb-5">
+          <input type="email" name="Email" id="email" placeholder="Enter your email" class="formbold-form-input">
+        </div>
+  
+        <div class="formbold-mb-5">
+          <input type="text" name="Phone" id="phone" placeholder="Enter your Phone Number" class="formbold-form-input">
+        </div>
+
+        <div class="formbold-mb-5">
+          <input type="text" name="Address" id="address" placeholder="Enter your Address" class="formbold-form-input">
+        </div>
+
+        <div class="formbold-mb-5">
+        <label for="Package" style="text-align: start;">What is your enquiry for?</label>
+        <select name="Package" id="package" class="formbold-form-input">
+          <option value="" class="formbold-form-input">Select One</option>
+          <option value="Enquiry only" class="formbold-form-input">Enquiry Only - Free</option>
+          <option value="1 lesson">1 Lesson $50</option>
+          <option value="5 Lessons">5 Lessons $225</option>
+          <option value="5 Lessons">10 Lessons $449</option>
+          <option value="5 Lesson + Test">5 Lesson + Driving Test $370</option>
+        </select>
+      </div>
+
+      
+
+        <div class="formbold-mb-5">
+          <textarea rows="8" name="Message" id="message" placeholder="If you have any query or messages please enter" class="formbold-form-input"></textarea>
+        </div>
+  
+        <div>
+          <button class="formbold-btn">Submit</button>
+        </div>
+      </form>
 </body>
 
-<script>
+<!-- <script>
     window.addEventListener("load", function () {
-        const form = document.getElementById('g-form');
+        const form = document.getElementById('contact-form');
         form.addEventListener("submit", function (e) {
             e.preventDefault();
             const data = new FormData(form);
@@ -35,6 +74,6 @@
                 })
         });
     });
-</script>
+</script> -->
 
 </html>
